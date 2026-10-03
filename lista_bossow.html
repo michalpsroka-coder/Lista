@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista Bossów</title>
+  <style>
+    :root {
+      --bg: #111827;
+      --panel: #1f2937;
+      --panel-2: #273449;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --accent: #8b5cf6;
+      --accent-2: #7c3aed;
+      --danger: #ef4444;
+      --border: #374151;
+      --success: #22c55e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #202a44 0%, var(--bg) 48%);
+      color: var(--text);
+    }
+
+    .container {
+      width: min(1100px, calc(100% - 28px));
+      margin: 32px auto;
+    }
+
+    h1 { margin: 0 0 8px; font-size: clamp(2rem, 5vw, 3.2rem); }
+    .subtitle { color: var(--muted); margin: 0 0 24px; }
+
+    .card {
+      background: rgba(31, 41, 55, 0.94);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 18px 60px rgba(0,0,0,.25);
+      backdrop-filter: blur(8px);
+    }
+
+    .section-title {
+      font-size: 1.05rem;
+      font-weight: 750;
+      margin: 0 0 12px;
+    }
+
+    .game-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input, button, select { font: inherit; }
+
+    input, select {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: #111827;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px 13px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(139,92,246,.18);
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 11px 15px;
+      cursor: pointer;
+      color: white;
+      background: var(--accent);
+      transition: .15s ease;
+    }
+
+    button:hover {
+      background: var(--accent-2);
+      transform: translateY(-1px);
+    }
+
+    button.secondary {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+    }
+
+    button.secondary:hover { background: #334155; }
+
+    button.danger {
+      background: transparent;
+      color: #fca5a5;
+      border: 1px solid #7f1d1d;
+    }
+
+    button.danger:hover { background: rgba(127,29,29,.25); }
+
+    .game-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .game-title-wrap {
+      min-width: 0;
+    }
+
+    .game-name {
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      overflow-wrap: anywhere;
+    }
+
+    .game-delete-note {
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.35;
+      max-width: 620px;
+    }
+
+    .stats { color: var(--muted); font-size: .92rem; }
+
+    .form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter.active { outline: 2px solid rgba(139,92,246,.45); }
+
+    .boss-list { display: grid; gap: 10px; }
+
+    .boss {
+      display: grid;
+      grid-template-columns: auto 74px 1fr auto;
+      align-items: center;
+      gap: 14px;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(17,24,39,.72);
+    }
+
+    .boss.done { opacity: .65; }
+    .boss.done .name { text-decoration: line-through; }
+
+    .thumb {
+      width: 74px;
+      height: 74px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      background: #0b1220;
+    }
+
+    .placeholder {
+      display: grid;
+      place-items: center;
+      color: #6b7280;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .check {
+      width: 24px;
+      height: 24px;
+      appearance: none;
+      border: 2px solid #6b7280;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .check:checked {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .check:checked::after {
+      content: "✓";
+      color: white;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .name {
+      font-size: 1.05rem;
+      word-break: break-word;
+      margin-bottom: 5px;
+    }
+
+    .game-tag {
+      display: inline-block;
+      color: var(--muted);
+      font-size: .8rem;
+    }
+
+    .edit-input {
+      display: none;
+      margin: 0 0 8px;
+      padding: 9px 10px;
+    }
+
+    .boss.editing .name { display: none; }
+    .boss.editing .edit-input { display: block; }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .image-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .image-actions button {
+      padding: 8px 10px;
+      font-size: .83rem;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 34px 15px;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+    }
+
+    .footer {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: .82rem;
+      text-align: center;
+    }
+
+    .hidden-file { display: none; }
+
+    @media (max-width: 760px) {
+      .game-row { grid-template-columns: 1fr; }
+      .form { grid-template-columns: 1fr; }
+
+      .game-info {
+        align-items: flex-start;
+      }
+
+      .stats {
+        width: 100%;
+      }
+
+      .boss {
+        grid-template-columns: auto 60px 1fr;
+      }
+
+      .thumb { width: 60px; height: 60px; }
+
+      .actions {
+        grid-column: 2 / -1;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .container { width: min(100% - 18px, 1100px); margin: 18px auto; }
+      .card { padding: 14px; }
+
+      .boss {
+        grid-template-columns: auto 54px 1fr;
+        gap: 10px;
+      }
+
+      .thumb { width: 54px; height: 54px; }
+      .image-actions button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>⚔️ Lista Bossów</h1>
+    <p class="subtitle">Osobne gry, status pokonania i własny obrazek dla każdego bossa.</p>
+
+    <section class="card">
+      <div class="section-title">Gra</div>
+
+      <div class="game-row">
+        <select id="gameSelect" aria-label="Wybierz grę"></select>
+        <button type="button" class="secondary" id="addGame">+ Dodaj grę</button>
+        <button type="button" class="danger" id="deleteGame">Usuń grę</button>
+      </div>
+
+      <div class="game-info">
+        <div class="game-title-wrap">
+          <div id="gameName" class="game-name"></div>
+          <div class="game-delete-note">Usunięcie gry usuwa też bossów przypisanych do tej gry.</div>
+        </div>
+        <div id="stats" class="stats"></div>
+      </div>
+
+      <form id="addForm" class="form">
+        <input id="bossInput" type="text" maxlength="120" placeholder="Nazwa nowego bossa..." autocomplete="off" required>
+        <button type="submit">+ Dodaj bossa</button>
+      </form>
+
+      <div class="toolbar">
+        <div class="filters">
+          <button type="button" class="secondary filter active" data-filter="all">Wszyscy</button>
+          <button type="button" class="secondary filter" data-filter="todo">Do pokonania</button>
+          <button type="button" class="secondary filter" data-filter="done">Pokonani</button>
+        </div>
+      </div>
+
+      <div id="bossList" class="boss-list"></div>
+
+      <div class="toolbar" style="margin-top:16px; margin-bottom:0;">
+        <button type="button" id="clearDone" class="secondary">Usuń pokonanych w tej grze</button>
+        <button type="button" id="resetAll" class="danger">Wyczyść wszystkie gry</button>
+      </div>
+    </section>
+
+    <div class="footer">Bossowie i obrazki są przechowywane lokalnie w tej przeglądarce (localStorage).</div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "boss-tracker-v2";
+    let currentFilter = "all";
+    let state = loadState();
+
+    function uid() {
+      if (crypto && crypto.randomUUID) return crypto.randomUUID();
+      return Date.now().toString(36) + Math.random().toString(36).slice(2);
+    }
+
+    function defaultState() {
+      const gameId = uid();
+      return {
+        games: [{ id: gameId, name: "Moja gra" }],
+        selectedGameId: gameId,
+        bosses: [
+          { id: uid(), gameId, name: "Boss 1", done: false, image: "" },
+          { id: uid(), gameId, name: "Boss 2", done: false, image: "" },
+          { id: uid(), gameId, name: "Boss 3", done: true, image: "" }
+        ]
+      };
+    }
+
+    function loadState() {
+      try {
+        const v2 = localStorage.getItem(STORAGE_KEY);
+        if (v2) {
+          const parsed = JSON.parse(v2);
+          if (parsed && Array.isArray(parsed.games) && Array.isArray(parsed.bosses)) return parsed;
+        }
+
+        // Migrate the original version of the page.
+        const old = localStorage.getItem("boss-tracker-v1");
+        if (old) {
+          const oldBosses = JSON.parse(old);
+          const gameId = uid();
+          return {
+            games: [{ id: gameId, name: "Moja gra" }],
+            selectedGameId: gameId,
+            bosses: Array.isArray(oldBosses)
+              ? oldBosses.map(b => ({
+                  id: b.id || uid(),
+                  gameId,
+                  name: b.name || "Bez nazwy",
+                  done: !!b.done,
+                  image: ""
+                }))
+              : []
+          };
+        }
+      } catch {}
+      return defaultState();
+    }
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function escapeHtml(text) {
+      return String(text).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    function currentGame() {
+      return state.games.find(g => g.id === state.selectedGameId) || state.games[0];
+    }
+
+    function renderGames() {
+      const select = document.getElementById("gameSelect");
+      if (!state.games.length) {
+        const g = { id: uid(), name: "Moja gra" };
+        state.games.push(g);
+        state.selectedGameId = g.id;
+        save();
+      }
+
+      if (!state.games.some(g => g.id === state.selectedGameId)) {
+        state.selectedGameId = state.games[0].id;
+      }
+
+      select.innerHTML = state.games.map(g =>
+        `<option value="${g.id}">${escapeHtml(g.name)}</option>`
+      ).join("");
+
+      select.value = state.selectedGameId;
+    }
+
+    function render() {
+      renderGames();
+
+      const game = currentGame();
+      document.getElementById("gameName").textContent = game?.name || "";
+
+      const gameBosses = state.bosses.filter(b => b.gameId === state.selectedGameId);
+      const doneCount = gameBosses.filter(b => b.done).length;
+      document.getElementById("stats").textContent =
+        `${doneCount} / ${gameBosses.length} pokonanych`;
+
+      const list = document.getElementById("bossList");
+      const visible = gameBosses.filter(b => {
+        if (currentFilter === "done") return b.done;
+        if (currentFilter === "todo") return !b.done;
+        return true;
+      });
+
+      if (!visible.length) {
+        list.innerHTML = '<div class="empty">Brak bossów pasujących do wybranego filtra.</div>';
+        return;
+      }
+
+      list.innerHTML = visible.map(boss => {
+        const image = boss.image
+          ? `<img class="thumb" src="${boss.image}" alt="">`
+          : `<div class="thumb placeholder">⚔</div>`;
+
+        return `
+          <article class="boss ${boss.done ? "done" : ""}" data-id="${boss.id}">
+            <input class="check" type="checkbox" ${boss.done ? "checked" : ""} aria-label="Oznacz jako pokonanego">
+            ${image}
+            <div>
+              <div class="name">${escapeHtml(boss.name)}</div>
+              <input class="edit-input" type="text" maxlength="120" value="${escapeHtml(boss.name)}" aria-label="Edytuj nazwę bossa">
+              <div class="image-actions">
+                <input class="hidden-file image-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+                <button type="button" class="secondary choose-image">📷 ${boss.image ? "Zmień obrazek" : "Dodaj obrazek"}</button>
+                ${boss.image ? '<button type="button" class="danger remove-image">Usuń obrazek</button>' : ''}
+              </div>
+            </div>
+            <div class="actions">
+              <button type="button" class="secondary edit">Edytuj</button>
+              <button type="button" class="danger delete">Usuń</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      bindBossEvents();
+    }
+
+    function bindBossEvents() {
+      const list = document.getElementById("bossList");
+
+      list.querySelectorAll(".check").forEach(input => {
+        input.addEventListener("change", () => {
+          const boss = findBoss(input.closest(".boss").dataset.id);
+          if (!boss) return;
+          boss.done = input.checked;
+          save();
+          render();
+        });
+      });
+
+      list.querySelectorAll(".edit").forEach(button => {
+        button.addEventListener("click", () => {
+          const row = button.closest(".boss");
+          const input = row.querySelector(".edit-input");
+
+          if (!row.classList.contains("editing")) {
+            row.classList.add("editing");
+            input.focus();
+            input.select();
+            button.textContent = "Zapisz";
+          } else {
+            const boss = findBoss(row.dataset.id);
+            const newName = input.value.trim();
+            if (!boss || !newName) return;
+            boss.name = newName;
+            save();
+            render();
+          }
+        });
+      });
+
+      list.querySelectorAll(".edit-input").forEach(input => {
+        input.addEventListener("keydown", event => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            input.closest(".boss").querySelector(".edit").click();
+          } else if (event.key === "Escape") {
+            render();
+          }
+        });
+      });
+
+      list.querySelectorAll(".delete").forEach(button => {
+        button.addEventListener("click", () => {
+          const id = button.closest(".boss").dataset.id;
+          state.bosses = state.bosses.filter(b => b.id !== id);
+          save();
+          render();
+        });
+      });
+
+      list.querySelectorAll(".choose-image").forEach(button => {
+        button.addEventListener("click", () => {
+          button.closest(".boss").querySelector(".image-file").click();
+        });
+      });
+
+      list.querySelectorAll(".image-file").forEach(input => {
+        input.addEventListener("change", async () => {
+          const file = input.files?.[0];
+          if (!file) return;
+
+          try {
+            const dataUrl = await compressImage(file);
+            const boss = findBoss(input.closest(".boss").dataset.id);
+            if (!boss) return;
+            boss.image = dataUrl;
+            save();
+            render();
+          } catch (err) {
+            alert("Nie udało się wczytać obrazka. Spróbuj użyć JPG, PNG lub WebP.");
+          }
+        });
+      });
+
+      list.querySelectorAll(".remove-image").forEach(button => {
+        button.addEventListener("click", () => {
+          const boss = findBoss(button.closest(".boss").dataset.id);
+          if (!boss) return;
+          boss.image = "";
+          save();
+          render();
+        });
+      });
+    }
+
+    function findBoss(id) {
+      return state.bosses.find(b => b.id === id);
+    }
+
+    function compressImage(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error("read"));
+        reader.onload = () => {
+          const img = new Image();
+          img.onerror = () => reject(new Error("image"));
+          img.onload = () => {
+            const maxSize = 220;
+            const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.max(1, Math.round(img.width * scale));
+            canvas.height = Math.max(1, Math.round(img.height * scale));
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL("image/jpeg", 0.78));
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    document.getElementById("gameSelect").addEventListener("change", event => {
+      state.selectedGameId = event.target.value;
+      currentFilter = "all";
+      document.querySelectorAll(".filter").forEach(b => b.classList.toggle("active", b.dataset.filter === "all"));
+      save();
+      render();
+    });
+
+    document.getElementById("addGame").addEventListener("click", () => {
+      const name = prompt("Podaj nazwę gry:");
+      if (!name || !name.trim()) return;
+
+      const game = { id: uid(), name: name.trim().slice(0, 80) };
+      state.games.push(game);
+      state.selectedGameId = game.id;
+      currentFilter = "all";
+      save();
+      render();
+    });
+
+    document.getElementById("deleteGame").addEventListener("click", () => {
+      const game = currentGame();
+      if (!game) return;
+
+      const count = state.bosses.filter(b => b.gameId === game.id).length;
+      const msg = count
+        ? `Usunąć grę "${game.name}" i jej ${count} bossów?`
+        : `Usunąć grę "${game.name}"?`;
+
+      if (!confirm(msg)) return;
+
+      state.bosses = state.bosses.filter(b => b.gameId !== game.id);
+      state.games = state.games.filter(g => g.id !== game.id);
+
+      if (!state.games.length) {
+        const newGame = { id: uid(), name: "Moja gra" };
+        state.games = [newGame];
+      }
+
+      state.selectedGameId = state.games[0].id;
+      save();
+      render();
+    });
+
+    document.getElementById("addForm").addEventListener("submit", event => {
+      event.preventDefault();
+      const input = document.getElementById("bossInput");
+      const name = input.value.trim();
+      if (!name || !currentGame()) return;
+
+      state.bosses.push({
+        id: uid(),
+        gameId: state.selectedGameId,
+        name: name.slice(0, 120),
+        done: false,
+        image: ""
+      });
+
+      input.value = "";
+      save();
+      render();
+      input.focus();
+    });
+
+    document.querySelectorAll(".filter").forEach(button => {
+      button.addEventListener("click", () => {
+        currentFilter = button.dataset.filter;
+        document.querySelectorAll(".filter").forEach(b => b.classList.remove("active"));
+        button.classList.add("active");
+        render();
+      });
+    });
+
+    document.getElementById("clearDone").addEventListener("click", () => {
+      state.bosses = state.bosses.filter(
+        boss => boss.gameId !== state.selectedGameId || !boss.done
+      );
+      save();
+      render();
+    });
+
+    document.getElementById("resetAll").addEventListener("click", () => {
+      if (!confirm("Na pewno usunąć wszystkie gry, bossów i obrazki?")) return;
+      state = defaultState();
+      save();
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
