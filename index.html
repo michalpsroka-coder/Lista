@@ -1,127 +1,106 @@
 <!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ASHEN — Boss Ledger</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#080707;--panel:#120e0d;--panel2:#17110f;--line:#493329;--line2:#2c211d;--text:#e5d4b7;--muted:#87786a;--gold:#b9935a;--red:#8f321f;--red2:#bd5634}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 12%,#31160f 0,#100b09 26%,#070707 62%);color:var(--text);font-family:Inter,sans-serif;min-height:100vh}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.2;background:repeating-linear-gradient(0deg,transparent 0 3px,#fff 4px,#fff 4px);mix-blend-mode:overlay}
-header{height:72px;border-bottom:1px solid #35251e;background:#090808eF;display:flex;align-items:center;justify-content:space-between;padding:0 5%;position:sticky;top:0;z-index:20;backdrop-filter:blur(8px)}
-.logo{font:800 21px Cinzel;letter-spacing:.22em}.logo b{color:var(--red2)}
-button,select,input{font:inherit}.admin{cursor:pointer;background:#17100e;border:1px solid #735035;color:#d3b17c;padding:10px 15px;border-radius:2px}
-.hero{text-align:center;padding:55px 20px 45px}.sig{color:#9e774b;letter-spacing:.4em;font-size:11px;text-transform:uppercase}.hero h1{font:700 clamp(45px,8vw,86px) Cinzel;margin:15px 0 8px;letter-spacing:.09em;text-shadow:0 8px 35px #000}.hero p{color:#86796d;max-width:680px;margin:auto;line-height:1.6}
-.wrap{max-width:1200px;margin:auto;padding:0 20px 70px}.toolbar{border:1px solid var(--line);background:linear-gradient(180deg,#17110f,#0d0b0a);padding:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;box-shadow:0 25px 70px #0009}.toolbar select,.toolbar input{background:#090808;border:1px solid #49382e;color:#d9c7ac;padding:11px}.search{flex:1;min-width:220px}.count{color:#75695e;font-size:12px}.count b{color:#d4b47f}
-.section-title{font:600 17px Cinzel;color:#bfa47d;margin:28px 0 16px;letter-spacing:.08em}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.card{border:1px solid var(--line);background:linear-gradient(145deg,#1b1210,#0e0b0a);box-shadow:0 20px 50px #0008;overflow:hidden}.card-head{padding:20px;border-bottom:1px solid var(--line2)}.card h2{font:600 21px Cinzel;margin:0 0 7px}.meta{font-size:11px;color:#786c61}.bar{height:3px;background:#2a211d;margin-top:16px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#612416,#c26b43);box-shadow:0 0 15px #9c3e2755}.boss{display:flex;align-items:center;gap:12px;padding:11px 12px;border-bottom:1px solid #211a17}.boss:last-child{border-bottom:0}.boss:hover{background:#1b1412}.crest{width:34px;height:34px;border:1px solid #694733;transform:rotate(45deg);display:grid;place-items:center;flex:none}.crest span{transform:rotate(-45deg);color:#9d6847;font-size:12px}.bn{flex:1;font-size:13px}.bn small{display:block;color:#635950;font-size:9px;letter-spacing:.18em;margin-top:4px}.check{width:25px;height:25px;border:1px solid #5b493c;background:#090808;color:transparent;cursor:pointer}
-.boss-img{width:42px;height:42px;border:1px solid #674632;object-fit:cover;flex:none;background:#0a0807;box-shadow:0 0 14px #000}
-.boss-img.placeholder{display:grid;place-items:center;color:#9d6847;font-size:12px}
-.boss .crest{width:34px;height:34px}
-.admin-image{display:flex;align-items:center;gap:8px;flex:1}
-.admin-image input[type=file]{max-width:240px;color:#8d8177;font-size:11px}
-.image-note{font-size:10px;color:#665b53;margin-top:5px}.done .check{color:#d3b681;background:#33251a}.done .bn{text-decoration:line-through;color:#756e67}.done{opacity:.55}
-.modal{position:fixed;inset:0;background:#000c;z-index:50;display:none;align-items:center;justify-content:center;padding:20px}.modal.open{display:flex}.dialog{width:min(680px,100%);max-height:90vh;overflow:auto;background:#120e0d;border:1px solid #765239;box-shadow:0 30px 100px #000;padding:25px}.dialog h2{font:600 25px Cinzel;margin:0 0 8px}.dialog p{color:#81756a;font-size:12px}.tabs{display:flex;gap:8px;margin:20px 0}.tab{padding:9px 13px;background:#0b0908;border:1px solid #3b2d26;color:#9d9185;cursor:pointer}.tab.active{border-color:#94613f;color:#d5b27d}.form{display:grid;grid-template-columns:1fr auto;gap:9px;margin:12px 0}.form input{background:#080707;border:1px solid #44342c;color:#eee;padding:12px}.primary{background:#76301f;border:1px solid #a95031;color:#f0d5b7;padding:11px 16px;cursor:pointer}.danger{background:transparent;border:1px solid #512c23;color:#9d5541;padding:7px 10px;cursor:pointer}.admin-game{border:1px solid #382a24;padding:13px;margin:8px 0}.admin-game strong{font-family:Cinzel}.admin-boss{display:flex;gap:8px;align-items:center;margin-top:7px;color:#a69a8e;font-size:12px}.close{float:right;background:transparent;border:0;color:#8c8178;font-size:22px;cursor:pointer}
-#toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#17100e;border:1px solid #8f5a3b;color:#e4c99c;padding:13px 20px;box-shadow:0 12px 45px #000;z-index:100;font-family:Cinzel,serif;font-size:13px;letter-spacing:.05em;transition:.25s}
-#toast.show{opacity:1;transform:translate(-50%,0)}
-.check{transition:.18s}.check:hover{border-color:#b46b43;box-shadow:0 0 14px #8f321f55}.check:active{transform:scale(.88)}
-@media(max-width:850px){.grid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.grid{grid-template-columns:1fr}.hero{padding-top:35px}.logo{font-size:15px}.admin{padding:8px}.form{grid-template-columns:1fr}}
-</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css">
 </head>
 <body>
-<header><div class="logo">ASHEN <b>✦</b> LEDGER</div><button class="admin" onclick="openAdmin()">⚔ KOMNATA STRAŻNIKA</button></header>
-<section class="hero"><div class="sig">Kronika poległych · Archiwum popiołu</div><h1>BOSS LEDGER</h1><p>Tu zapisane są wszystkie zwycięstwa. Dodawaj krainy, wpisuj ich władców i prowadź kronikę aż do ostatniego ogniska.</p></section>
-<main class="wrap">
-<div class="toolbar"><select id="gameFilter" onchange="render()"></select><select id="statusFilter" onchange="render()"><option value="all">Wszyscy bossowie</option><option value="todo">Do pokonania</option><option value="done">Pokonani</option></select><input id="search" class="search" placeholder="Przeszukaj kronikę..." oninput="render()"><div class="count"><b id="doneCount">0</b> / <b id="totalCount">0</b> bossów poległo</div></div>
-<div class="section-title">✦ KSIĘGA POLEGŁYCH <span style="font-family:Inter;font-size:10px;color:#6f6258;letter-spacing:.05em;margin-left:12px">Kliknij kwadrat przy bossie, aby oznaczyć go jako pokonanego.</span></div><div id="grid" class="grid"></div>
-</main>
-<div class="modal" id="modal"><div class="dialog"><button class="close" onclick="closeAdmin()">×</button><h2>Komnata Strażnika</h2><p>W tej wersji możesz bezpośrednio dodawać gry i bossów. Dane są zapisane w tej przeglądarce. Po podłączeniu Supabase ten panel może zostać spięty ze wspólną bazą widoczną dla wszystkich odwiedzających.</p>
-<div class="tabs"><button id="tabGames" class="tab active" onclick="showTab('games')">Gry</button><button id="tabBosses" class="tab" onclick="showTab('bosses')">Bossowie</button></div>
-<div id="gamesPanel"></div><div id="bossesPanel" style="display:none"></div></div></div>
-<script>
-const initial={games:[
-{name:"Elden Ring",bosses:["Margit, Upadły Omen","Godrick Przeszczepiony","Rennala, Królowa Pełni","Radahn, Gwiazda Zagłady","Malenia, Ostrze Miquelli"]},
-{name:"Dark Souls III",bosses:["Iudex Gundyr","Vordt z Mroźnej Doliny","Strażnicy Otchłani","Pontiff Sulyvahn","Nameless King"]},
-{name:"Lies of P",bosses:["Parade Master","Scrapped Watchman","King's Flame, Fuoco","Bishop of St. Frangelico","Laxasia the Complete"]}]};
-let data=JSON.parse(localStorage.getItem("ashen_v3")||"null")||initial; let done=JSON.parse(localStorage.getItem("ashen_done_v3")||"{}");
-data.games.forEach(g=>g.bosses=g.bosses.map(b=>bossObj(b)));
-function save(){localStorage.setItem("ashen_v3",JSON.stringify(data));localStorage.setItem("ashen_done_v3",JSON.stringify(done))}
-function k(g,b){return g+"::"+b}
-function bossObj(b){return typeof b==="string"?{name:b,image:""}:b}
-function render(){const gf=document.getElementById("gameFilter"),old=gf.value||"all";gf.innerHTML='<option value="all">Wszystkie krainy</option>'+data.games.map(g=>`<option value="${esc(g.name)}">${esc(g.name)}</option>`).join("");gf.value=[...gf.options].some(o=>o.value===old)?old:"all";
-let sf=statusFilter.value,q=search.value.toLowerCase(),html="",all=0,dc=0;
-data.games.forEach(g=>{
-  const bsAll=g.bosses.map(bossObj); all+=bsAll.length; dc+=bsAll.filter(b=>done[k(g.name,b.name)]).length;
-  if(gf.value!=="all"&&g.name!==gf.value)return;
-  let bs=bsAll.filter(b=>(sf==="all"||(sf==="done"&&done[k(g.name,b.name)])||(sf==="todo"&&!done[k(g.name,b.name)]))&&b.name.toLowerCase().includes(q));
-  if(!bs.length)return;
-  let d=bsAll.filter(b=>done[k(g.name,b.name)]).length,p=Math.round(d/bsAll.length*100);
-  html+=`<section class="card"><div class="card-head"><h2>${esc(g.name)}</h2><div class="meta">${d} / ${bsAll.length} · ${p}% ukończenia</div><div class="bar"><i style="width:${p}%"></i></div></div>${bs.map((b,i)=>{
-    const image=b.image?`<img class="boss-img" src="${b.image}" alt="">`:`<div class="crest"><span>☠</span></div>`;
-    return `<div class="boss ${done[k(g.name,b.name)]?'done':''}">${image}<div class="bn">${esc(b.name)}<small>BOSS · ${i+1}</small></div><button class="check" type="button" data-game="${esc(g.name)}" data-boss="${esc(b.name)}">✓</button></div>`;
-  }).join("")}</section>`;
-});
-document.getElementById("grid").innerHTML=html||'<div style="grid-column:1/-1;text-align:center;padding:60px;color:#71675f;border:1px dashed #332821">Brak wpisów w tej części kroniki.</div>';
-document.getElementById("doneCount").textContent=dc;document.getElementById("totalCount").textContent=all;
-}
-function toggle(g,b){
-  const keyName=k(g,b);
-  done[keyName]=!done[keyName];
-  save();
-  render();
-  renderAdmin();
-  showToast(done[keyName] ? "⚔ "+b+" — POKONANY" : "↩ "+b+" — status cofnięty");
-}
-function showToast(message){
-  let t=document.getElementById("toast");
-  if(!t){t=document.createElement("div");t.id="toast";document.body.appendChild(t);}
-  t.textContent=message;t.classList.add("show");
-  clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>t.classList.remove("show"),2200);
-}
-document.getElementById("grid").addEventListener("click",function(e){
-  const btn=e.target.closest(".check");
-  if(!btn)return;
-  e.preventDefault();
-  toggle(btn.dataset.game,btn.dataset.boss);
-});
-function esc(s){return s.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;")}
-function openAdmin(){modal.classList.add("open");renderAdmin()}function closeAdmin(){modal.classList.remove("open")}
-function showTab(t){gamesPanel.style.display=t==="games"?"block":"none";bossesPanel.style.display=t==="bosses"?"block":"none";tabGames.classList.toggle("active",t==="games");tabBosses.classList.toggle("active",t==="bosses")}
-function addGame(){let n=document.getElementById("newGame").value.trim();if(!n)return;if(data.games.some(g=>g.name.toLowerCase()===n.toLowerCase()))return alert("Taka gra już istnieje.");data.games.push({name:n,bosses:[]});document.getElementById("newGame").value="";save();render();renderAdmin()}
-function removeGame(i){if(confirm("Usunąć tę grę i jej bossów?")){data.games.splice(i,1);save();render();renderAdmin()}}
-function addBoss(){
-  const gi=+document.getElementById("bossGame").value;
-  const b=document.getElementById("newBoss").value.trim();
-  const file=document.getElementById("bossImage").files[0];
-  if(!b)return;
-  if(file){
-    resizeImage(file,96,96,(img)=>{
-      data.games[gi].bosses.push({name:b,image:img});
-      document.getElementById("newBoss").value="";
-      document.getElementById("bossImage").value="";
-      save();render();renderAdmin();
-    });
-  }else{
-    data.games[gi].bosses.push({name:b,image:""});
-    document.getElementById("newBoss").value="";
-    save();render();renderAdmin();
-  }
-}
-function resizeImage(file,w,h,cb){
-  const reader=new FileReader();
-  reader.onload=()=>{const im=new Image();im.onload=()=>{
-    const c=document.createElement("canvas");c.width=w;c.height=h;
-    const x=c.getContext("2d"),s=Math.max(w/im.width,h/im.height),nw=im.width*s,nh=im.height*s;
-    x.drawImage(im,(w-nw)/2,(h-nh)/2,nw,nh);cb(c.toDataURL("image/jpeg",.82));
-  };im.src=reader.result};reader.readAsDataURL(file);
-}
+<header>
+  <div class="logo">ASHEN <b>✦</b> LEDGER</div>
+  <div class="header-actions">
+    <span id="authStatus" class="auth-status"></span>
+    <button id="adminBtn" class="admin">⚔ KOMNATA STRAŻNIKA</button>
+  </div>
+</header>
 
-function removeBoss(gi,bi){if(confirm("Usunąć tego bossa?")){let g=data.games[gi],b=g.bosses[bi],bn=typeof b==="string"?b:b.name;delete done[k(g.name,bn)];g.bosses.splice(bi,1);save();render();renderAdmin()}}
-function renderAdmin(){gamesPanel.innerHTML=`<div class="form"><input id="newGame" placeholder="Nazwa nowej gry"><button class="primary" onclick="addGame()">+ Dodaj grę</button></div>`+data.games.map((g,i)=>`<div class="admin-game"><div style="display:flex;justify-content:space-between;gap:10px"><strong>${esc(g.name)}</strong><button class="danger" onclick="removeGame(${i})">Usuń grę</button></div><div style="color:#6f655c;font-size:11px;margin-top:5px">${g.bosses.length} bossów</div></div>`).join("");
-bossesPanel.innerHTML=`<div class="form"><select id="bossGame">${data.games.map((g,i)=>`<option value="${i}">${esc(g.name)}</option>`).join("")}</select><input id="newBoss" placeholder="Nazwa nowego bossa"><button class="primary" onclick="addBoss()">+ Dodaj bossa</button></div>
-<div style="display:flex;gap:10px;align-items:center;margin:8px 0 16px"><label style="color:#9c8e80;font-size:11px">Mały obrazek bossa:</label><input id="bossImage" type="file" accept="image/png,image/jpeg,image/webp"></div>
-<div class="image-note">Obraz zostanie automatycznie zmniejszony do małego rozmiaru, żeby strona działała szybko.</div>`+
-data.games.map((g,gi)=>`<div class="admin-game"><strong>${esc(g.name)}</strong>${g.bosses.map((raw,bi)=>{let b=bossObj(raw);return `<div class="admin-boss"><span style="flex:1;display:flex;align-items:center;gap:8px">${b.image?`<img src="${b.image}" style="width:30px;height:30px;object-fit:cover;border:1px solid #5d402f">`:"☠"} ${esc(b.name)} ${done[k(g.name,b.name)]?"✓":""}</span><button class="danger" onclick="removeBoss(${gi},${bi})">Usuń</button></div>`}).join("")}</div>`).join("")}
-render();
-</script></body></html>
+<section class="hero">
+  <div class="sig">Kronika poległych · Archiwum popiołu</div>
+  <h1>BOSS LEDGER</h1>
+  <p>Tu zapisane są wszystkie zwycięstwa. Każdy odwiedzający może zobaczyć kronikę — zmieniać ją może tylko Strażnik.</p>
+</section>
+
+<main class="wrap">
+  <div id="notice" class="notice hidden"></div>
+
+  <div class="toolbar">
+    <select id="gameFilter"><option value="all">Wszystkie krainy</option></select>
+    <select id="statusFilter">
+      <option value="all">Wszyscy bossowie</option>
+      <option value="todo">Do pokonania</option>
+      <option value="done">Pokonani</option>
+    </select>
+    <input id="search" class="search" placeholder="Przeszukaj kronikę...">
+    <div class="count"><b id="doneCount">0</b> / <b id="totalCount">0</b> bossów poległo</div>
+  </div>
+
+  <div class="section-title">✦ KSIĘGA POLEGŁYCH</div>
+  <div id="grid" class="grid">
+    <div class="loading">Otwieranie archiwum…</div>
+  </div>
+</main>
+
+<div id="adminModal" class="modal">
+  <div class="dialog">
+    <button class="close" id="closeAdmin">×</button>
+    <div id="loginView">
+      <h2>Komnata Strażnika</h2>
+      <p>Zaloguj się kontem administratora. Tylko konto wskazane w konfiguracji Supabase może modyfikować gry, bossów i statusy.</p>
+      <input id="email" type="email" placeholder="E-mail administratora" autocomplete="username">
+      <input id="password" type="password" placeholder="Hasło" autocomplete="current-password">
+      <div class="dialog-actions">
+        <button class="ghost" id="cancelLogin">Zamknij</button>
+        <button class="primary" id="loginBtn">Zaloguj</button>
+      </div>
+      <div id="loginError" class="error"></div>
+    </div>
+
+    <div id="adminView" class="hidden">
+      <div class="admin-head">
+        <div>
+          <h2>Komnata Strażnika</h2>
+          <p id="adminEmail"></p>
+        </div>
+        <button class="ghost" id="logoutBtn">Wyloguj</button>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="games">Gry</button>
+        <button class="tab" data-tab="bosses">Bossowie</button>
+      </div>
+
+      <section id="gamesPanel">
+        <div class="form-row">
+          <input id="newGame" placeholder="Nazwa nowej gry">
+          <button class="primary" id="addGameBtn">+ Dodaj grę</button>
+        </div>
+        <div id="gamesAdminList"></div>
+      </section>
+
+      <section id="bossesPanel" class="hidden">
+        <div class="form-stack">
+          <select id="bossGame"></select>
+          <input id="newBoss" placeholder="Nazwa nowego bossa">
+          <label class="file-label">Mały obrazek bossa
+            <input id="bossImage" type="file" accept="image/png,image/jpeg,image/webp">
+          </label>
+          <div class="image-note">JPG / PNG / WebP. Obraz zostanie automatycznie zmniejszony do małego rozmiaru.</div>
+          <button class="primary" id="addBossBtn">+ Dodaj bossa</button>
+        </div>
+        <div id="bossesAdminList"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./config.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
